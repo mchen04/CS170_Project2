@@ -23,7 +23,7 @@ def greedy_forward_selection(num_features, evaluate_func):
         for feature in feature_candidates:
             candidate_feature_set = current_feature_set | {feature}
             accuracy = evaluate_func(candidate_feature_set)
-            temp_log.append(f"Using feature(s) {{{', '.join(map(str, sorted(current_feature_set)))}}} accuracy is {accuracy:.1f}%")
+            temp_log.append(f"Using feature(s) {{{', '.join(map(str, sorted(list(candidate_feature_set))))}}} accuracy is {accuracy:.1f}%")
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
                 best_feature = feature
@@ -87,7 +87,7 @@ def backward_elimination(num_features, evaluate_func):
 
 #main ui
 def main():
-    print("Welcome to Tabito Sakamoto's Feature Selection Algorithm.")
+    print("Welcome to Tabito Sakamoto & Michael Chen's Feature Selection Algorithm.")
 
     try:
         num_features = int(input("Please enter total number of features: "))
