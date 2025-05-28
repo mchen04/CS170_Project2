@@ -21,13 +21,12 @@ def greedy_forward_selection(num_features, evaluate_func):
         temp_log = []
 
         for feature in feature_candidates:
-            current_feature_set.add(feature)
-            accuracy = evaluate_func(current_feature_set)
+            candidate_feature_set = current_feature_set | {feature}
+            accuracy = evaluate_func(candidate_feature_set)
             temp_log.append(f"Using feature(s) {{{', '.join(map(str, sorted(current_feature_set)))}}} accuracy is {accuracy:.1f}%")
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
                 best_feature = feature
-            current_feature_set.remove(feature)
 
         trace_log.extend(temp_log)
 
