@@ -56,7 +56,7 @@ def backward_elimination(num_features, evaluate_func):
 
     for _ in range(num_features - 1):
         feature_candidates = list(current_feature_set)
-        best_accuracy = float('inf') 
+        best_accuracy = -1
         feature_to_remove = None
         temp_log = []
 
@@ -66,7 +66,7 @@ def backward_elimination(num_features, evaluate_func):
 
             temp_log.append(f"Using feature(s) {{{', '.join(map(str, sorted(candidate_feature_set)))}}} accuracy is {accuracy:.1f}%")
 
-            if accuracy < best_accuracy:
+            if accuracy > best_accuracy:
                 best_accuracy = accuracy
                 feature_to_remove = feature
 
