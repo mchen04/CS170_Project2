@@ -90,7 +90,7 @@ def main():
     print("Welcome to Tabito Sakamoto's Feature Selection Algorithm.")
 
     try:
-        num_features = input("Please enter total number of features: ")
+        num_features = int(input("Please enter total number of features: "))
     except ValueError:
         print("Invalid input. Please enter an integer.")
         return
@@ -102,8 +102,10 @@ def main():
     choice = input()
 
     if choice == "1":
-        print("Forward Selection will run here.")  
+        trace = greedy_forward_selection(num_features, test_evaluate_subset)
+        print("\n".join(trace))
     elif choice == "2":
-        print("Backward Elimination will run here.")  
+        trace = backward_elimination(num_features, test_evaluate_subset)  
+        print("\n".join(trace))
     else:
         print("Invalid input. Please enter 1 or 2.")
