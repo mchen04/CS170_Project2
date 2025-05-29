@@ -1,7 +1,9 @@
 import os
-from data_loader import load_dataset, normalize_features
-from nn_classifier import NearestNeighborClassifier
-from validator import evaluate_loocv 
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.data_loader import load_dataset, normalize_features
+from src.nn_classifier import NearestNeighborClassifier
+from src.validator import evaluate_loocv 
 
 def run_loocv_tests():
     print("\nTesting Leave-One-Out Cross-Validation (LOOCV) Validator")

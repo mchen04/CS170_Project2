@@ -1,4 +1,4 @@
-#loads datasets from files and dpes feature normalization
+#loads datasets from files and does feature normalization
 def load_dataset(filepath):
     dataset = []
     with open(filepath, 'r') as f:

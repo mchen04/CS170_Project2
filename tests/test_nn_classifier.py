@@ -1,6 +1,8 @@
 import os
-from data_loader import load_dataset, normalize_features
-from nn_classifier import NearestNeighborClassifier
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.data_loader import load_dataset, normalize_features
+from src.nn_classifier import NearestNeighborClassifier
 
 def run_nn_classifier_tests():
     print("\nTesting Nearest Neighbor Classifier")
