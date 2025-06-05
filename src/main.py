@@ -51,7 +51,7 @@ def greedy_forward_selection(num_features, evaluate_func):
         trace_log.extend(temp_log)
 
         if best_features:
-            best_feature = min(best_features)  
+            best_feature = max(best_features)  
             current_feature_set.add(best_feature)  
 
             trace_log.append(f"Feature set {{{', '.join(map(str, sorted(current_feature_set)))}}} was best, accuracy is {best_accuracy:.1f}%")
