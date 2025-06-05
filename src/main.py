@@ -35,7 +35,7 @@ def greedy_forward_selection(num_features, evaluate_func):
     for _ in range(num_features):
         feature_candidates = [f for f in range(1, num_features + 1) if f not in current_feature_set]
         best_accuracy = -1
-        best_feature = None
+        best_features = []
         temp_log = []
 
         for feature in feature_candidates:
@@ -44,11 +44,14 @@ def greedy_forward_selection(num_features, evaluate_func):
             temp_log.append(f"Using feature(s) {{{', '.join(map(str, sorted(list(candidate_feature_set))))}}} accuracy is {accuracy:.1f}%")
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                best_feature = feature
+                best_features = [feature]
+            elif accuracy == best_accuracy:
+                best_features.append(feature)
 
         trace_log.extend(temp_log)
 
-        if best_feature is not None:
+        if best_features:
+            best_feature = min(best_features)  
             current_feature_set.add(best_feature)  
 
             trace_log.append(f"Feature set {{{', '.join(map(str, sorted(current_feature_set)))}}} was best, accuracy is {best_accuracy:.1f}%")
