@@ -67,10 +67,10 @@ def greedy_forward_selection(num_features, evaluate_func):
 
 #backward function
 def backward_elimination(num_features, evaluate_func):
-    current_feature_set = set(range(1, num_features + 1))  #start with all features
+    current_feature_set = set(range(1, num_features + 1))  # start with all features
     trace_log = []
 
-    #evaluate the full set
+    # evaluate the full set
     best_overall_accuracy = evaluate_func(current_feature_set)
     best_overall_feature_set = set(current_feature_set)
     trace_log.append(f"Using all features and \"random\" evaluation, I get an accuracy of {best_overall_accuracy:.1f}%\nBeginning search.")
@@ -78,7 +78,7 @@ def backward_elimination(num_features, evaluate_func):
     for _ in range(num_features - 1):
         feature_candidates = list(current_feature_set)
         best_accuracy = -1
-        feature_to_remove = None
+        best_features_to_remove = []
         temp_log = []
 
         for feature in feature_candidates:
@@ -89,11 +89,14 @@ def backward_elimination(num_features, evaluate_func):
 
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                feature_to_remove = feature
+                best_features_to_remove = [feature]
+            elif accuracy == best_accuracy:
+                best_features_to_remove.append(feature)
 
         trace_log.extend(temp_log)
 
-        if feature_to_remove is not None:
+        if best_features_to_remove:
+            feature_to_remove = min(best_features_to_remove)  
             current_feature_set.remove(feature_to_remove)
             trace_log.append(f"Feature set {{{', '.join(map(str, sorted(current_feature_set)))}}} was best, accuracy is {best_accuracy:.1f}%")
 
