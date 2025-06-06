@@ -9,8 +9,8 @@ def test_evaluate_subset(feature_subset):
     _ = feature_subset
     return random.uniform(0.0, 100.0)
 
-#wrapper function for evaluate_loocv 
-def create_real_evaluate_func(dataset):
+#wrapper function for evaluate_loocv with k parameter
+def create_real_evaluate_func(dataset, k=1):
     def real_evaluate_func(feature_subset):
         if len(feature_subset) == 0:
             #return a low accuracy for empty feature set
@@ -18,7 +18,7 @@ def create_real_evaluate_func(dataset):
         #convert set to list for indexing
         feature_list = list(feature_subset)
         #search uses 1-based indexing + evaluate_loocv handles conversion to 0-based.
-        accuracy = evaluate_loocv(dataset, feature_list, NearestNeighborClassifier)
+        accuracy = evaluate_loocv(dataset, feature_list, lambda: NearestNeighborClassifier(k))
         return accuracy
     return real_evaluate_func
 
@@ -113,78 +113,84 @@ def backward_elimination(num_features, evaluate_func):
 def main():
     print("Welcome to Tabito Sakamoto & Michael Chen's Feature Selection Algorithm.")
     
-    #ask user if they want to use a dataset or just test with dummy evaluation
-    print("\nWould you like to:")
-    print("1) Test with dummy evaluation")
-    print("2) Use real dataset with actual evaluation")
+    file_path = input("Type in the name of the file to test: ")
     
-    mode = input("\nPlease enter your choice (1 or 2): ")
-    
-    if mode == "1":
-        # Part I mode 
-        try:
-            num_features = int(input("Please enter total number of features: "))
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
-            return
+    #try to load the dataset
+    try:
+        raw_data = load_dataset(f"data/{file_path}")
+        num_features = len(raw_data[0][0])  
+        print(f"This dataset has {num_features} features (not including the class attribute), with {len(raw_data)} instances.")
         
-        print("\nType the number of the algorithm you want to run.")
-        print("1) Forward Selection")
-        print("2) Backward Elimination")
+        #normalize the features
+        print("Please wait while I normalize the data... Done!")
+        normalized_data = normalize_features(raw_data)
         
-        choice = input()
-        
-        if choice == "1":
-            trace = greedy_forward_selection(num_features, test_evaluate_subset)
-            print("\n".join(trace))
-        elif choice == "2":
-            trace = backward_elimination(num_features, test_evaluate_subset)
-            print("\n".join(trace))
-        else:
-            print("Invalid input. Please enter 1 or 2.")
-            
-    elif mode == "2":
-        # Part II mode 
-        file_path = input("Please enter the dataset file name (e.g., small-test-dataset.txt): ")
-        
-        #try to load the dataset
-        try:
-            raw_data = load_dataset(f"data/{file_path}")
-            num_features = len(raw_data[0][0])  
-            print(f"This dataset has {num_features} features (not including the class attribute), with {len(raw_data)} instances.")
-            
-            #normalize the features
-            print("Please wait while I normalize the data... Done!")
-            normalized_data = normalize_features(raw_data)
-            
-            #create the real evaluation function with the normalized dataset
-            real_evaluate_func = create_real_evaluate_func(normalized_data)
-            
-        except FileNotFoundError:
-            print(f"Error: Could not find file 'data/{file_path}'. Please make sure the file exists.")
-            return
-        except Exception as e:
-            print(f"Error loading dataset: {e}")
-            return
+    except FileNotFoundError:
+        print(f"Error: Could not find file 'data/{file_path}'. Please make sure the file exists.")
+        return
+    except Exception as e:
+        print(f"Error loading dataset: {e}")
+        return
 
-        print("\nType the number of the algorithm you want to run.")
-        print("1) Forward Selection")
-        print("2) Backward Elimination")
+    print("\nType the number of the algorithm you want to run.")
+    print("1) Forward Selection")
+    print("2) Backward Elimination")
+    print("3) KNN Analysis (k=1,3,5,7)")
 
-        choice = input()
+    choice = input()
 
-        if choice == "1":
-            print("\nRunning forward selection...")
+    if choice == "1":
+        #create the real evaluation function with k=1
+        real_evaluate_func = create_real_evaluate_func(normalized_data, k=1)
+        trace = greedy_forward_selection(num_features, real_evaluate_func)
+        print("\n".join(trace))
+    elif choice == "2":
+        #create the real evaluation function with k=1
+        real_evaluate_func = create_real_evaluate_func(normalized_data, k=1)
+        trace = backward_elimination(num_features, real_evaluate_func)  
+        print("\n".join(trace))
+    elif choice == "3":
+        print("\n" + "="*60)
+        print("KNN COMPARISON (Both Algorithms)")
+        print("="*60)
+        
+        k_values = [1, 3, 5, 7]
+        forward_results = {}
+        backward_results = {}
+        
+        for k in k_values:
+            print(f"\n--- Testing with k={k} ---")
+            real_evaluate_func = create_real_evaluate_func(normalized_data, k=k)
+            
+            print(f"Forward Selection (k={k}):")
             trace = greedy_forward_selection(num_features, real_evaluate_func)
-            print("\n".join(trace))
-        elif choice == "2":
-            print("\nRunning backward elimination...")
-            trace = backward_elimination(num_features, real_evaluate_func)  
-            print("\n".join(trace))
-        else:
-            print("Invalid input. Please enter 1 or 2.")
+            forward_result = trace[-1]  #get final result line
+            print(forward_result)
+            forward_results[k] = forward_result
+            
+            print(f"\nBackward Elimination (k={k}):")
+            trace = backward_elimination(num_features, real_evaluate_func)
+            backward_result = trace[-1]  #get final result line
+            print(backward_result)
+            backward_results[k] = backward_result
+        
+        #summary comparison
+        print("\n" + "="*60)
+        print("SUMMARY COMPARISON")
+        print("="*60)
+        print("k\tForward Selection Result")
+        print("-" * 60)
+        
+        for k in k_values:
+            print(f"{k}\t{forward_results[k]}")
+            
+        print("\nk\tBackward Elimination Result")
+        print("-" * 60)
+        
+        for k in k_values:
+            print(f"{k}\t{backward_results[k]}")
     else:
-        print("Invalid choice. Please enter 1 or 2.")
+        print("Invalid input. Please enter 1, 2, or 3.")
 
 
 if __name__ == "__main__":
