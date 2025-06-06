@@ -30,7 +30,7 @@ def greedy_forward_selection(num_features, evaluate_func):
     #evaluate
     best_overall_accuracy = evaluate_func(current_feature_set)
     best_overall_feature_set = set(current_feature_set)
-    trace_log.append(f"Using no features and \"random\" evaluation, I get an accuracy of {best_overall_accuracy:.1f}%\nBeginning search.")
+    trace_log.append(f"Running nearest neighbor with no features (default rate), using \"leaving-one-out\" evaluation, I get an accuracy of {best_overall_accuracy:.1f}%\nBeginning search.")
 
     for _ in range(num_features):
         feature_candidates = [f for f in range(1, num_features + 1) if f not in current_feature_set]
@@ -73,7 +73,7 @@ def backward_elimination(num_features, evaluate_func):
     # evaluate the full set
     best_overall_accuracy = evaluate_func(current_feature_set)
     best_overall_feature_set = set(current_feature_set)
-    trace_log.append(f"Using all features and \"random\" evaluation, I get an accuracy of {best_overall_accuracy:.1f}%\nBeginning search.")
+    trace_log.append(f"Running nearest neighbor with all features, using \"leaving-one-out\" evaluation, I get an accuracy of {best_overall_accuracy:.1f}%\nBeginning search.")
 
     for _ in range(num_features - 1):
         feature_candidates = list(current_feature_set)
@@ -154,6 +154,7 @@ def main():
             print(f"This dataset has {num_features} features (not including the class attribute), with {len(raw_data)} instances.")
             
             #normalize the features
+            print("Please wait while I normalize the data... Done!")
             normalized_data = normalize_features(raw_data)
             
             #create the real evaluation function with the normalized dataset
