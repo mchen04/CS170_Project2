@@ -115,8 +115,8 @@ def main():
     
     #ask user if they want to use a dataset or just test with dummy evaluation
     print("\nWould you like to:")
-    print("1) Test with dummy evaluation (Part I demo)")
-    print("2) Use real dataset with actual evaluation (Part II integration)")
+    print("1) Test with dummy evaluation")
+    print("2) Use real dataset with actual evaluation")
     
     mode = input("\nPlease enter your choice (1 or 2): ")
     
